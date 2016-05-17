@@ -112,7 +112,7 @@ app.directive('mySubmit', function ($parse) {
         link: function (scope, element, attrs) {
             scope.submitFn = $parse(attrs.mySubmit);
             return scope.toggleSubmit = function () {
-                return element.attr('disabled', !element.attr('disabled'));
+                //return element.attr('disabled', !element.attr('disabled'));
             };
         },
         template: "<button ng-click='directiveSubmitFn()'><span ng-transclude></span></button>"
