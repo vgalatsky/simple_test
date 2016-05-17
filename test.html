@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+
+    <script type="text/javascript" src="angular.js"></script>
+
+    
+
+    <style type="text/css">
+
+    </style>
+
+    <title>Quick Test</title>
+
+</head>
+
+<body>
+    <div ng-app='myapp' ng-controller='myController'>
+
+
+
+
+
+        <input type='text' ng-model="myVar"/>
+
+
+        <button ng-click='TestError()'>Question 1: Exception</button>
+
+        <button my-submit='myAsyncSubmit(myVar)'>Question 2: Arguments</button>
+
+        
+
+
+
+
+    </div>
+
+
+
+
+    <script type='text/javascript'>
+
+    var app = angular.module('myapp', ['ng']).provider({
+    
+
+    $exceptionHandler: function(){
+        var handler = function(exception, cause) {
+            alert ("There has been an error: the error is: \"" + exception.message + "\". Please call helpdesk");
+            
+        };
+
+        this.$get = function() {
+            return handler;
+        };
+        
+        
+    }
+});
+
+
+app.controller('myController', function ($scope, $q, $exceptionHandler) {
+
+
+
+  $scope.TestError = function () {
+
+            try {
+                
+                x=x/0;
+                    throw( new Error( "Something went wrong."))
+                } catch ( error ) {
+                    $exceptionHandler( error );
+                }
+  }
+
+
+    $scope.myAsyncSubmit = function () {
+       
+        var response = arguments[0].split(',');
+      
+
+        var final = response[2] + ','+ response[3] +',' + response[4];
+
+        alert(final);
+        
+        deferred = $q.defer();
+       
+        deferred.resolve();
+        
+        return deferred.promise;
+    }
+})
+
+app.directive('mySubmit', function ($parse) {
+    return {
+        controller: function ($scope) {
+            return $scope.directiveSubmitFn = function (e) {
+                $scope.toggleSubmit();
+                return $scope.submitFn($scope).then((function () {
+                    return $scope.toggleSubmit();
+                }), (function () {
+                    return $scope.toggleSubmit();
+                }));
+            };
+        },
+        replace: true,
+        transclude: true,
+        link: function (scope, element, attrs) {
+            scope.submitFn = $parse(attrs.mySubmit);
+            return scope.toggleSubmit = function () {
+                return element.attr('disabled', !element.attr('disabled'));
+            };
+        },
+        template: "<button ng-click='directiveSubmitFn()'><span ng-transclude></span></button>"
+    };
+});
+
+    </script>
+
+</body>
+
+</html>
